@@ -1,7 +1,7 @@
 name = "ForwardMethods"
 uuid = "5fe2550f-d27e-4649-9aea-fdf9a83a1aa9"
 authors = ["Curt Da Silva <curt.dasilva@gmail.com>"]
-version = "1.6.0"
+version = "1.7.0"
 
 [deps]
 MLStyle = "d8e11817-5142-5d16-987a-aa16d5891078"
