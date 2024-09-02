@@ -228,7 +228,15 @@ function forward_methods_expr(Type, field_expr, args...; _sourceinfo=nothing)
 
     output = Expr(:block)
     for arg in method_exprs
-        push!(output.args, forward_method_signature(Type, field_funcs, map_func,  arg; _sourceinfo))
+        _args = @switch arg begin 
+            @case Expr(:block, args...)
+                filter(t->!(t isa LineNumberNode), args)
+            @case _ 
+                [arg]
+        end
+        for arg in _args
+            push!(output.args, forward_method_signature(Type, field_funcs, map_func, arg; _sourceinfo))
+        end
     end
     return output
 end
@@ -260,6 +268,8 @@ Each `method` must be one of the following expressions
     `f(args[1], ..., args[i-1], ::Type{T}, args[i+1], ..., args[end]; kwargs) = f(args[1], ..., args[i-1], fieldtype(T, k), args[i+1], ..., args[end]; kwargs)`
 
   which can be useful for forwarding, for instance, trait-based methods to the corresponding container type. 
+
+Each `method` may also be a `:block` expression, where each sub-expression satisfies one of the above conditions
 
 ## Optional Arguments 
 The optional `map=_map` parameter allows you to apply an expression transformation to the resulting forwarded expression. `_map` must be an expression containing at least one underscore `_` placeholder and optionally `_obj` placeholders. `_` and `_obj` will be replaced with the transformed function and initial object argument, respectively. 
